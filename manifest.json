@@ -3,13 +3,13 @@
   "version": "1.0",
   "description": "Get r/anime comments on crunchyroll",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://www.crunchyroll.com/*"],
-  "options_page": "options.html",
+  "options_page": "pages/options.html",
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
   "page_action": {
-    "default_popup": "popup.html",
+    "default_popup": "pages/popup.html",
     "default_icon": "images/app-icon4_128.png"
   },
   "icons": {
@@ -22,7 +22,7 @@
     {
       "matches": ["*://www.crunchyroll.com/*/*"],
       "css": ["Reddit-Embed/css/red.css", "Reddit-Embed/css/light-theme.css"],
-      "js": ["Reddit-Embed/dist/bundle.min.js", "reddit-api.min.js", "inject.js"],
+      "js": ["Reddit-Embed/dist/bundle.min.js", "content_scripts/reddit-api.min.js", "content_scripts/inject.js"],
       "run_at": "document_start"
     }
   ],

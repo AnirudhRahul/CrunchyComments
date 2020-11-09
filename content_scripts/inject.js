@@ -67,7 +67,7 @@ function onDOMLoaded(settings){
 
 
   const embed_div = document.createElement("div")
-  embed_div.setAttribute("class", "reddit-embed")
+  embed_div.setAttribute("class", "reddit-embed center")
 
   const sidebar = document.getElementById("sidebar")
   const main_content = document.getElementById("main_content")
@@ -88,8 +88,12 @@ function onDOMLoaded(settings){
   		if(cur.link_flair_text == 'Episode' && cur.subreddit == 'anime'){
         console.log("FOUND POST")
         red.embed(cur.url+'about.json', embed_div,
-  			{show_post_body:false, ignore_sticky_comments:true, show_comments_section_header:false,
+  			{
+          show_post_body:false,
+          ignore_sticky_comments:true,
+          show_comments_section_header:false,
   				post_author: 'AutoLovepon',
+          initial_padding: 0,
   			})
   			console.log(cur.url+'about.json');
         break;
