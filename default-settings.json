@@ -1,0 +1,17 @@
+{
+  'disabled': false,
+  'dark-theme': false,
+  'hide-cr-sidebar': true,
+  'show-sticky-comments': false,
+  'show-comment-header': true,
+  'show-post': true,
+  'show-post-title': true,
+  'show-post-header': false,
+  'show-post-body': false,
+  'show-external-links': true,
+  'show-mal': true,
+  'show-anidb':true,
+  'show-anilist':true,
+  'show-kitsu':true,
+  'show-official':true,
+}

@@ -1,7 +1,7 @@
 {
-  "name": "Getting Started Example",
+  "name": "CrunchyComments",
   "version": "1.0",
-  "description": "Build an Extension!",
+  "description": "Get r/anime comments on crunchyroll",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://www.crunchyroll.com/*"],
   "options_page": "options.html",
   "background": {
@@ -10,27 +10,27 @@
   },
   "page_action": {
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "images/get_started16.png",
-      "32": "images/get_started32.png",
-      "48": "images/get_started48.png",
-      "128": "images/get_started128.png"
-    }
+    "default_icon": "images/app-icon4_128.png"
   },
   "icons": {
-    "16": "images/get_started16.png",
-    "32": "images/get_started32.png",
-    "48": "images/get_started48.png",
-    "128": "images/get_started128.png"
+    "16": "images/app-icon4_16.png",
+    "32": "images/app-icon4_32.png",
+    "48": "images/app-icon4_48.png",
+    "128": "images/app-icon4_128.png"
   },
   "content_scripts": [
     {
       "matches": ["*://www.crunchyroll.com/*/*"],
       "css": ["Reddit-Embed/css/red.css", "Reddit-Embed/css/light-theme.css"],
       "js": ["Reddit-Embed/dist/bundle.min.js", "reddit-api.min.js", "inject.js"],
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ],
-
+  "web_accessible_resources": [
+    "Reddit-Embed/css/fonts/Reddit-IBMPlexSans-Bold.woff2",
+    "Reddit-Embed/css/fonts/Reddit-IBMPlexSans.woff2",
+    "Reddit-Embed/css/fonts/Reddit-Noto-Mono.woff2",
+    "Reddit-Embed/css/fonts/Reddit-Noto-Sans.woff2"
+  ],
   "manifest_version": 2
 }

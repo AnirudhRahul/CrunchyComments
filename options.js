@@ -23,26 +23,31 @@ for(const element of document.getElementsByTagName("input")){
 //   });
 // }
 
-  chrome.storage.sync.get({
-    'show-sticky-comments': false,
-    'show-comment-header': true,
-    'show-post': true,
-    'show-post-title': true,
-    'show-post-header': false,
-    'show-post-body': false,
-    'show-external-links': true,
-    'show-mal': true,
-    'show-anidb':true,
-    'show-anilist':true,
-    'show-kitsu':true,
-    'show-official':true
-  }, function(items) {
-    for(id in items){
-      document.getElementById(id).checked = items[id]
-      if(id=='show-post')
-        disableChildren(post_children, items[id])
-      else if(id=='show-external-links')
-        disableChildren(link_children, items[id])
+  chrome.storage.sync.get(
+    {
+      'disabled': false,
+      'dark-theme': false,
+      'hide-cr-sidebar': true,
+      'show-sticky-comments': false,
+      'show-comment-header': true,
+      'show-post': true,
+      'show-post-title': true,
+      'show-post-header': false,
+      'show-post-body': false,
+      'show-external-links': true,
+      'show-mal': true,
+      'show-anidb':true,
+      'show-anilist':true,
+      'show-kitsu':true,
+      'show-official':true,
+    },
+    function(items) {
+      for(id in items){
+        document.getElementById(id).checked = items[id]
+        if(id=='show-post')
+          disableChildren(post_children, items[id])
+        else if(id=='show-external-links')
+          disableChildren(link_children, items[id])
     }
   });
 

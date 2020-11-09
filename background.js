@@ -5,21 +5,6 @@
 'use strict';
 
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.storage.sync.set({
-    'show-sticky-comments': false,
-    'show-comment-header': true,
-    'show-post': true,
-    'show-post-title': true,
-    'show-post-header': false,
-    'show-post-body': false,
-    'show-external-links': true,
-    'show-mal': true,
-    'show-anidb':true,
-    'show-anilist':true,
-    'show-kitsu':true,
-    'show-official':true
-  }, ()=>{console.log("Finished init")});
-
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [new chrome.declarativeContent.PageStateMatcher({
@@ -29,3 +14,18 @@ chrome.runtime.onInstalled.addListener(function() {
     }]);
   });
 });
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.dark){
+      chrome.tabs.insertCSS(sender.tab.id, {
+        file: "Reddit-Embed/css/dark-theme.css"
+      });
+      console.log("DARK MODE ACTIVATED")
+    }
+
+    sendResponse({completed: "true"});
+  });
