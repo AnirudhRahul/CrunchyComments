@@ -1,9 +1,11 @@
-console.log("ROAD OH RRRRRRRRRRRRRRRRROOOOOOOLLLLLLLLLEEEEEEEEEEEER")
 let DOM_loaded = false
 
+const embed_div = document.createElement("div")
+embed_div.setAttribute("class", "reddit-embed center")
+
 document.addEventListener("DOMContentLoaded", ()=>{DOM_loaded=true});
-// document.fonts.add(new FontFace("Noto Sans", "url('Reddit-Embed/css/fonts/Reddit-Noto-Sans.woff2')"))
-// document.fonts.add(new FontFace("IBMPlexSans", "url('Reddit-Embed/css/fonts/Reddit-IBMPlexSans.woff2')"))
+
+chrome.runtime.sendMessage('poll-gh', console.log)
 
 chrome.storage.sync.get(
   {
@@ -11,7 +13,7 @@ chrome.storage.sync.get(
     'dark-theme': false,
     'hide-cr-sidebar': true,
     'show-sticky-comments': false,
-    'show-comment-header': true,
+    'show-comment-header': false,
     'show-post': true,
     'show-post-title': true,
     'show-post-header': false,
@@ -28,10 +30,39 @@ chrome.storage.sync.get(
     if(settings['disabled'])
       return
     if(settings['dark-theme']){
-      chrome.runtime.sendMessage({dark: true}, function(response) {
-        console.log("Dark Theme", response);
+      chrome.runtime.sendMessage('dark-theme', (resp)=>{
+        console.log(resp)
+        document.documentElement.style.setProperty('--tab-shader', '#ffffff1A')
+        document.documentElement.style.setProperty('--tab-bg', '#1b1b1b')
       });
     }
+
+    getRedditQuery(location.href, (query)=>{
+      console.log("Query", query)
+      reddit.search(query).sort("relevance").fetch((res) => {
+        for(post of res.data.children){
+          const cur = post.data
+          if(cur.link_flair_text == 'Episode' && cur.subreddit == 'anime'){
+            console.log("FOUND POST")
+            red.embed(cur.url+'about.json', embed_div,
+            {
+              show_post: settings['show-post'],
+              show_post_title: settings['show-post-title'],
+              show_post_header: settings['show-post-header'],
+              show_post_body: settings['show-post-body'],
+              ignore_sticky_comments: !settings['show-sticky-comments'],
+              show_comments_section_header:settings['show-comment-header'],
+              post_author: 'AutoLovepon',
+              initial_padding: 0,
+            })
+            console.log(cur.url+'about.json');
+            break;
+          }
+        }
+      })
+    })
+
+    //Not sure if this is neccessary
     if(DOM_loaded)
       onDOMLoaded(settings)
     else
@@ -39,65 +70,64 @@ chrome.storage.sync.get(
   }
 );
 
+function getRedditQuery(url, callback){
+  url = url.substring(url.indexOf('://')+3)
+  url_components = url.split('/')
+  console.log(url_components)
+
+
+  console.log("URL:", url)
+  const query = 'JUJUTSU KAISEN' + ' - Episode ' + 6 + ' discussion'
+  callback(query)
+}
+
 
 
 function onDOMLoaded(settings){
   DOM_loaded = true
 
-  const titleElement = document.querySelector("h1[itemprop=itemListElement]")
-  if(titleElement==null){
-    console.log("Title Element not found")
-    return
-  }
+  const tab_div = document.createElement("div")
+  tab_div.setAttribute("class","tab-view")
+  tab_div.innerHTML = `
+  <input type="radio" name="tabs" id="tab1" checked />
+	<label for="tab1">
+    r/anime <img id="ranime-icon" src="${chrome.runtime.getURL('../images/ranime-icon-mask.png')}"/>
+  </label>
 
-  const show_element = titleElement.getElementsByTagName("a")[0]
-  const show_name = show_element.children[0].innerText
-  const show_link = show_element.getAttribute('href')
+	<input type="radio" name="tabs" id="tab2" />
+	<label for="tab2">
+    Crunchyroll <img id="cr-icon" src="${chrome.runtime.getURL('../images/crunchyroll-icon.svg')}"/>
+  </label>
+  `
 
-  let titleText = titleElement.innerText
-  if(titleText.startsWith(show_name))
-    titleText = titleText.slice(show_name.length)
-  titleText = titleText.trim()
+  const tab1 = document.createElement("div")
+  tab1.setAttribute("class","tab content1")
+  tab1.appendChild(embed_div)
+  tab_div.appendChild(tab1)
 
-  const episode = {
-    number: parseInt(titleText.split(" – ")[0].split(" ")[1]),
-    name: titleText.split(" – ")[1]
-  }
-
-
-
-  const embed_div = document.createElement("div")
-  embed_div.setAttribute("class", "reddit-embed center")
-
+  const tab2 = document.createElement("div")
+  tab2.setAttribute("class","tab content2")
   const sidebar = document.getElementById("sidebar")
+  const comment_div = document.getElementsByClassName("guestbook comments box")[0]
+  comment_div.setAttribute('class', 'left guestbook comments box')
   const main_content = document.getElementById("main_content")
-  main_content.style.width = (sidebar.offsetWidth + main_content.offsetWidth)+'px'
-  const comment_div = main_content.getElementsByClassName("guestbook comments box")[0]
-  main_content.insertBefore(embed_div, comment_div);
+  comment_div.style.width = main_content.offsetWidth+'px'
+  main_content.style.width = (sidebar.offsetWidth + main_content.offsetWidth + 20)+'px'
+  tab2.innerHTML = comment_div.outerHTML + '\n' + sidebar.outerHTML
+  tab_div.appendChild(tab2)
+
+  main_content.appendChild(tab_div);
+
   comment_div.remove();
   sidebar.remove()
 
-  const query = show_name + ' - Episode ' + episode.number + ' discussion'
+  const classes_to_change = {
+    'xsmall-margin-bottom player-container player-container-16-9': 'wide-player-container wide-player-container-16-9',
+  }
 
-  console.log("Query", query)
-
-  reddit.search(query).sort("relevance").fetch(function(res) {
-  	console.log(res);
-  	for(post of res.data.children){
-  		const cur = post.data
-  		if(cur.link_flair_text == 'Episode' && cur.subreddit == 'anime'){
-        console.log("FOUND POST")
-        red.embed(cur.url+'about.json', embed_div,
-  			{
-          show_post_body:false,
-          ignore_sticky_comments:true,
-          show_comments_section_header:false,
-  				post_author: 'AutoLovepon',
-          initial_padding: 0,
-  			})
-  			console.log(cur.url+'about.json');
-        break;
-  		}
-  	}
-  });
+  for(const [key, value] of Object.entries(classes_to_change)){
+    const list = document.getElementsByClassName(key)
+    if(list.length>0)
+      list[0].setAttribute('class', value)
+  }
 }

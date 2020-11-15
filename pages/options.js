@@ -3,9 +3,7 @@ for(const element of document.getElementsByTagName("input")){
   element.addEventListener('change', function(){
     const obj = {}
     obj[this.id]=this.checked
-    chrome.storage.sync.set(obj, function() {
-      console.log("Finished saving", this.id)
-    });
+    chrome.storage.sync.set(obj, console.log);
   })
 }
 
@@ -29,7 +27,7 @@ for(const element of document.getElementsByTagName("input")){
       'dark-theme': false,
       'hide-cr-sidebar': true,
       'show-sticky-comments': false,
-      'show-comment-header': true,
+      'show-comment-header': false,
       'show-post': true,
       'show-post-title': true,
       'show-post-header': false,

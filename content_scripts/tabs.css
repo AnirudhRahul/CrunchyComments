@@ -1,0 +1,66 @@
+:root {
+    --tab-bg: #f2f2f2;
+    --tab-shader: #00000016
+}
+
+.tab-view > input { display: none; }
+.tab-view > input + label { display: inline-block }
+
+.tab-view > input ~ .tab { display: none }
+.tab-view > #tab1:checked ~ .tab.content1,
+.tab-view > #tab2:checked ~ .tab.content2 { display: block; }
+
+.tab-view > input + label {
+  border: 1px solid #777;
+  background: var(--tab-shader);
+  padding: 4px 12px !important;
+  margin: 0px !important;
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  top: 1px;
+  cursor: pointer;
+  vertical-align: middle;
+  font-family: IMBPlexSans, Arial;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.75 !important;
+}
+.tab-view > input:checked + label {
+  background: var(--tab-bg);
+  border-bottom: 1px solid transparent;
+}
+.tab-view > input ~ .tab {
+  border-top: 1px solid #777;
+  padding-top: 12px;
+}
+
+#ranime-icon{
+  background-color: rgb(86, 135, 227);
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  border-radius: 100%;
+  vertical-align: middle;
+}
+
+#cr-icon{
+  border: none !important;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  border-radius: 100%;
+  vertical-align: middle;
+}
+
+#sidebar{
+  margin-left: 20px;
+}
+
+#sidebar .landscape-element {
+  width: 296px !important;
+  background: none !important;
+}
+
+.white-wrapper.large-margin-bottom{
+  margin-bottom: 20px !important;
+}
