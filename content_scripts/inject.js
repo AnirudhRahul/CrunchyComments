@@ -29,38 +29,14 @@ chrome.storage.sync.get(
     console.log("Settings", settings)
     if(settings['disabled'])
       return
-    if(settings['dark-theme']){
+    if(settings['dark-theme'])
       chrome.runtime.sendMessage('dark-theme', (resp)=>{
         console.log(resp)
         document.documentElement.style.setProperty('--tab-shader', '#ffffff1A')
         document.documentElement.style.setProperty('--tab-bg', '#1b1b1b')
       });
-    }
 
-    getRedditQuery(location.href, (query)=>{
-      console.log("Query", query)
-      reddit.search(query).sort("relevance").fetch((res) => {
-        for(post of res.data.children){
-          const cur = post.data
-          if(cur.link_flair_text == 'Episode' && cur.subreddit == 'anime'){
-            console.log("FOUND POST")
-            red.embed(cur.url+'about.json', embed_div,
-            {
-              show_post: settings['show-post'],
-              show_post_title: settings['show-post-title'],
-              show_post_header: settings['show-post-header'],
-              show_post_body: settings['show-post-body'],
-              ignore_sticky_comments: !settings['show-sticky-comments'],
-              show_comments_section_header:settings['show-comment-header'],
-              post_author: 'AutoLovepon',
-              initial_padding: 0,
-            })
-            console.log(cur.url+'about.json');
-            break;
-          }
-        }
-      })
-    })
+    getRedditQuery(location.href, redEmbedCallback(settings), buttonAppendCallback)
 
     //Not sure if this is neccessary
     if(DOM_loaded)
@@ -70,18 +46,95 @@ chrome.storage.sync.get(
   }
 );
 
-function getRedditQuery(url, callback){
-  url = url.substring(url.indexOf('://')+3)
-  url_components = url.split('/')
-  console.log(url_components)
-
-
-  console.log("URL:", url)
-  const query = 'JUJUTSU KAISEN' + ' - Episode ' + 6 + ' discussion'
-  callback(query)
+function redEmbedCallback(settings){
+return (query) => {
+  reddit.search(query).sort("relevance").fetch((res) => {
+    for(post of res.data.children){
+      const cur = post.data
+      console.log(cur)
+      const modern_requirement = cur.title.startsWith(query) && cur.link_flair_text == 'Episode' && cur.subreddit == 'anime'  && cur.author == 'AutoLovepon'
+      const legacy_requirement = cur.title.startsWith('[Spoilers] '+query) && cur.subreddit == 'anime'
+      if(modern_requirement || legacy_requirement){
+        red.embed(cur.url+'about.json', embed_div,
+        {
+          show_post: settings['show-post'],
+          show_post_title: settings['show-post-title'],
+          show_post_header: settings['show-post-header'],
+          show_post_body: settings['show-post-body'],
+          ignore_sticky_comments: !settings['show-sticky-comments'],
+          show_comments_section_header:settings['show-comment-header'],
+          post_author: 'AutoLovepon',
+          initial_padding: 0,
+        })
+        console.log("FOUND POST")
+        console.log(cur.url+'about.json');
+        break;
+      }
+    }
+  })
+  }
 }
 
+function buttonAppendCallback(show_name){
+  // chrome.storage.sync.get()
+}
 
+// Checks if string is an integer
+function isNumeric(value) {
+  return /^-?\d+$/.test(value);
+}
+
+function getRedditQuery(url, embed_callback, button_callback){
+  const url_components = url.substring(url.indexOf('://')+3).split('/')
+
+  let episode_number = undefined
+  for(word of url_components[2].split('-'))
+    if(word.length<6 && isNumeric(word)){
+      episode_number = parseInt(word)
+      break
+    }
+
+  chrome.storage.local.get({'streamsMap':{}}, (resp) =>{
+    let stream_url = url_components[0] + '/' + url_components[1]
+    if(stream_url.startsWith('www.'))
+      stream_url = stream_url.substring(4)
+    console.log('stream url:', stream_url)
+    if(resp.streamsMap.length==0){
+      console.log("Stream map not found")
+    }
+    else if(stream_url in resp.streamsMap){
+      console.log("Found Map Entry", resp.streamsMap[stream_url])
+      let possible_titles = getPossibleTitles(episode_number, resp.streamsMap[stream_url])
+      function resolveIndex(index){
+        console.log("RESOLVING INDEX",index)
+        const show_name = resp.streamsMap[stream_url][index].title
+        button_callback(show_name)
+        episode_number -= resp.streamsMap[stream_url][index].offset
+        const query = show_name + ' - Episode ' + episode_number + ' discussion'
+        console.log(query)
+        embed_callback(query)
+        console.log("FINISHED embed_callback")
+      }
+
+      if(possible_titles.length==1){
+        resolveIndex(possible_titles[0].index)
+      }
+      else{
+        document.addEventListener("DOMContentLoaded", ()=>{
+          const cr_title =   document.getElementsByClassName('showmedia-header cf')[0].querySelectorAll('span[itemprop=name]')[1].innerText
+          console.log('CR TITLE', cr_title)
+          const bestMatch_index = getBestMatch(cr_title, episode_number, resp.streamsMap[stream_url])
+          resolveIndex(bestMatch_index)
+        })
+      }
+
+    }
+    else{
+      console.log("No r/anime post found for this show")
+    }
+  })
+
+}
 
 function onDOMLoaded(settings){
   DOM_loaded = true
@@ -96,7 +149,7 @@ function onDOMLoaded(settings){
 
 	<input type="radio" name="tabs" id="tab2" />
 	<label for="tab2">
-    Crunchyroll <img id="cr-icon" src="${chrome.runtime.getURL('../images/crunchyroll-icon.svg')}"/>
+    Crunchyroll <img id="cr-icon" src="${chrome.runtime.getURL('../images/ui-icons/crunchyroll-icon.svg')}"/>
   </label>
   `
 
@@ -113,7 +166,17 @@ function onDOMLoaded(settings){
   const main_content = document.getElementById("main_content")
   comment_div.style.width = main_content.offsetWidth+'px'
   main_content.style.width = (sidebar.offsetWidth + main_content.offsetWidth + 20)+'px'
-  tab2.innerHTML = comment_div.outerHTML + '\n' + sidebar.outerHTML
+  if(settings['hide-cr-sidebar']){
+    //Centers the comment div
+    comment_div.style['margin-left'] = 'auto'
+    comment_div.style['margin-right'] = 'auto'
+    comment_div.style['float'] = 'none'
+    comment_div.style['width'] = '900px'
+    tab2.innerHTML = comment_div.outerHTML
+  }
+  else
+    tab2.innerHTML = comment_div.outerHTML + '\n' + sidebar.outerHTML
+
   tab_div.appendChild(tab2)
 
   main_content.appendChild(tab_div);
