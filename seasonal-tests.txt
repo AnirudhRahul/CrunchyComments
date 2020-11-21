@@ -1,0 +1,28 @@
+Season: fall_2016.yaml
+OLD
+Title: Bungou Stray Dogs 2nd Season
+http://www.crunchyroll.com/bungo-stray-dogs
+
+Title: 3-gatsu no Lion
+http://www.crunchyroll.com/march-comes-in-like-a-lion
+
+Season: fall_2017.yaml
+OLD
+Title: Shokugeki no Souma: San no Sara
+http://www.crunchyroll.com/food-wars-shokugeki-no-soma
+
+Season: fall_2018.yaml
+OLD
+Title: Golden Kamuy Season 2
+https://www.crunchyroll.com/golden-kamuy|12
+
+Title: Tokyo Ghoul:re Season 2
+https://www.crunchyroll.com/tokyo-ghoul-re|12
+
+Season: fall_2019.yaml
+NEW
+Title: Ginga Eiyuu Densetsu: Die Neue These - Seiran
+https://www.crunchyroll.com/legend-of-the-galactic-heroes-die-neue-these|12
+
+Title: Assassins Pride
+https://www.crunchyroll.com/assassins-pride
