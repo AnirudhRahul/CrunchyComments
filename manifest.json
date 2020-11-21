@@ -21,8 +21,14 @@
   "content_scripts": [
     {
       "matches": ["*://www.crunchyroll.com/*/*"],
-      "css": ["Reddit-Embed/css/red.css", "Reddit-Embed/css/light-theme.css", "content_scripts/tabs.css"],
-      "js": ["Reddit-Embed/dist/bundle.min.js", "content_scripts/reddit-api.min.js", "content_scripts/inject.js"],
+      "css": ["Reddit-Embed/css/red-important.css", "Reddit-Embed/css/light-theme.css", "content_scripts/tabs.css"],
+      "js": [
+        "Reddit-Embed/dist/bundle.min.js",
+        "content_scripts/reddit-api.min.js",
+        "content_scripts/fuzzball_ultra_lite.js",
+        "content_scripts/matcher.js",
+        "content_scripts/inject.js"
+      ],
       "run_at": "document_start"
     }
   ],
@@ -32,7 +38,7 @@
     "Reddit-Embed/css/fonts/Reddit-Noto-Mono.woff2",
     "Reddit-Embed/css/fonts/Reddit-Noto-Sans.woff2",
     "images/ranime-icon-mask.png",
-    "images/crunchyroll-icon.svg"
+    "images/ui-icons/*"
   ],
   "manifest_version": 2
 }
