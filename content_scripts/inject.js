@@ -36,7 +36,7 @@ chrome.storage.sync.get(
         document.documentElement.style.setProperty('--tab-bg', '#1b1b1b')
       });
 
-    getRedditQuery(location.href, redEmbedCallback(settings), buttonAppendCallback)
+    getRedditQuery(location.href, redEmbedCallback(settings), buttonAppendCallback(settings))
 
     //Not sure if this is neccessary
     if(DOM_loaded)
@@ -75,8 +75,54 @@ return (query) => {
   }
 }
 
-function buttonAppendCallback(show_name){
-  // chrome.storage.sync.get()
+function buttonAppendCallback(settings){
+  return (show_name)=>{
+    if(settings['show-external-links'])
+    chrome.storage.local.get({'infoMap':{}}, (resp) =>{
+      if(show_name in resp.infoMap){
+        console.log(show_name, 'found in', 'infoMAP')
+        console.log(resp.infoMap)
+        const html_buttons = []
+        const info = resp.infoMap[show_name]
+        for(const [key, url] of Object.entries(info)){
+          console.log(key,url)
+          if(key=='official'){
+            html_buttons.push(Button.Official(url))
+          }
+          // else if(key=='subreddit'){
+          //   html_buttons.push(Button.Reddit('https://reddit.com'+url))
+          // }
+          else if(url.includes('anidb.net')){
+            html_buttons.push(Button.AniDB(url))
+          }
+          else if(url.includes('anilist.co')){
+            html_buttons.push(Button.AniList(url))
+          }
+          else if(url.includes('kitsu.io')){
+            html_buttons.push(Button.Kitsu(url))
+          }
+          else if(url.includes('myanimelist.net')){
+            html_buttons.push(Button.Mal(url))
+          }
+        }
+        html_buttons.sort();
+
+        console.log(html_buttons)
+        if(DOM_loaded)
+          addButtons(html_buttons)
+        else
+          document.addEventListener("DOMContentLoaded", ()=>{addButtons(html_buttons)})
+      }
+    })
+  }
+
+}
+
+function addButtons(HTML_list){
+
+  const outputHTML = `<div class="btn-container">\n` + HTML_list.join('\n') + `\n<div>`
+  document.getElementsByClassName("showmedia-submenu white-wrapper cf container-shadow small-margin-bottom")[0].innerHTML = outputHTML
+
 }
 
 // Checks if string is an integer
@@ -108,6 +154,7 @@ function getRedditQuery(url, embed_callback, button_callback){
       function resolveIndex(index){
         console.log("RESOLVING INDEX",index)
         const show_name = resp.streamsMap[stream_url][index].title
+        console.log("BUTTON CALLBACK", show_name)
         button_callback(show_name)
         episode_number -= resp.streamsMap[stream_url][index].offset
         const query = show_name + ' - Episode ' + episode_number + ' discussion'

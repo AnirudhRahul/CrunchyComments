@@ -1,0 +1,81 @@
+.btn {
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    height: 16px;
+    padding: 5px 8px !important;
+    margin-left: 5px;
+}
+
+.btn *{
+  border: none !important;
+}
+
+.mal{
+  background-color: #2E51A2;
+}
+.mal:hover{
+  background-color: #3761c3;
+}
+
+.anilist{
+  background-color: #2B2D42 !important;
+}
+.anilist:hover{
+  background-color: #424566 !important;
+}
+
+.anidb{
+  background-color: #2E3347 !important;
+}
+.anidb:hover{
+  background-color: #424966 !important;
+}
+
+.kitsu{
+  background-color: #402F3F !important;
+}
+.kitsu:hover{
+  background-color: #523c51 !important;
+}
+
+.reddit{
+  background-color: #db5004 !important;
+}
+.reddit:hover{
+  background-color: #eb580C !important;
+}
+
+.official{
+  background-color: #353A4F !important;
+}
+.official:hover{
+  background-color: #464c68 !important;
+}
+
+.btn-title{
+  color: #eee;
+  font-family: "IBMPlexSans" !important;
+  margin-left: 4.8px;
+  font-weight: 700;
+  font-size: 14.4px;
+}
+
+.icon {
+  max-height: 12px;
+  display:inline-block;
+  vertical-align: middle;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  zoom: 1.24;
+  margin-top:-3px;
+  /* height: 30px; */
+}

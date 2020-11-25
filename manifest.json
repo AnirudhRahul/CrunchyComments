@@ -21,12 +21,18 @@
   "content_scripts": [
     {
       "matches": ["*://www.crunchyroll.com/*/*"],
-      "css": ["Reddit-Embed/css/red-important.css", "Reddit-Embed/css/light-theme.css", "content_scripts/tabs.css"],
+      "css": [
+        "Reddit-Embed/css/red-important.css",
+        "Reddit-Embed/css/light-theme.css",
+        "content_scripts/buttons.css",
+        "content_scripts/tabs.css"
+      ],
       "js": [
         "Reddit-Embed/dist/bundle.min.js",
         "content_scripts/reddit-api.min.js",
         "content_scripts/fuzzball_ultra_lite.js",
         "content_scripts/matcher.js",
+        "content_scripts/button-templates.js",
         "content_scripts/inject.js"
       ],
       "run_at": "document_start"
