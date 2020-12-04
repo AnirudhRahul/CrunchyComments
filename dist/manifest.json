@@ -1,0 +1,42 @@
+{
+  "name": "CrunchyComments",
+  "version": "1.0",
+  "description": "Get r/anime comments on crunchyroll",
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://www.crunchyroll.com/*"],
+  "options_page": "pages/options/options.html",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "pages/popup/popup.html",
+    "default_icon": "images/app-icon4_128.png"
+  },
+  "icons": {
+    "16": "images/app-icon4_16.png",
+    "32": "images/app-icon4_32.png",
+    "48": "images/app-icon4_48.png",
+    "128": "images/app-icon4_128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.crunchyroll.com/*/episode*"],
+      "css": ["themes/light.css"],
+      "js": [
+        "content_scripts/modules/reddit-bundle.min.js",
+        "content_scripts/modules/reddit-api.min.js",
+        "content_scripts/modules/fuzzball_ultra_lite.js",
+        "content_scripts/src/matcher.js",
+        "content_scripts/src/button-templates.js",
+        "content_scripts/src/inject.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    "content_scripts/fonts/*",
+    "images/ui-icons/*",
+    "pages/*"
+  ],
+  "manifest_version": 2
+}
