@@ -2,7 +2,7 @@
   "name": "CrunchyComments",
   "version": "1.0",
   "description": "Get r/anime comments on crunchyroll",
-  "permissions": ["activeTab", "declarativeContent", "storage", "*://www.crunchyroll.com/*"],
+  "permissions": ["storage", "unlimitedStorage", "*://www.crunchyroll.com/*"],
   "options_page": "pages/options/options.html",
   "background": {
     "scripts": ["background.js"],
