@@ -2,6 +2,9 @@ let DOM_loaded = false
 
 const embed_div = document.createElement("div")
 embed_div.setAttribute("class", "reddit-embed center")
+// 1 -> r/anime tab
+// 2 -> CR tab
+default_tab = 1
 
 document.addEventListener("DOMContentLoaded", ()=>{DOM_loaded=true});
 
@@ -42,6 +45,7 @@ chrome.storage.sync.get(
   }
 );
 
+// TODO: Implement beter querying
 function redEmbedCallback(settings){
 return (query) => {
   reddit.search(query).sort("relevance").fetch((res) => {
@@ -130,6 +134,21 @@ function isNumeric(value) {
   return /^-?\d+$/.test(value);
 }
 
+function reportError(error_text, important){
+  if(important)
+    embed_div.innerHTML = `<h4> <span style="color:#ED4347">Error: </span>${error_text}</h4>`
+  else
+    embed_div.innerHTML = `<h4>${error_text}</h4>`
+
+  if(!important){
+    if(!DOM_loaded)
+      default_tab = 2
+    else{
+      document.getElementById("tab2").checked = true
+    }
+  }
+}
+
 function getRedditQuery(url, embed_callback, button_callback){
   const url_components = url.substring(url.indexOf('://')+3).split('/')
 
@@ -146,21 +165,19 @@ function getRedditQuery(url, embed_callback, button_callback){
       stream_url = stream_url.substring(4)
     console.log('stream url:', stream_url)
     if(resp.streamsMap.length==0){
-      console.log("Stream map not found")
+      reportError("The extension was not able to install its dependencies", true)
+      console.error("Stream map not found")
     }
     else if(stream_url in resp.streamsMap){
       console.log("Found Map Entry", resp.streamsMap[stream_url])
       let possible_titles = getPossibleTitles(episode_number, resp.streamsMap[stream_url])
       function resolveIndex(index){
-        console.log("RESOLVING INDEX",index)
         const show_name = resp.streamsMap[stream_url][index].title
-        console.log("BUTTON CALLBACK", show_name)
         button_callback(show_name)
         episode_number -= resp.streamsMap[stream_url][index].offset
         const query = show_name + ' - Episode ' + episode_number + ' discussion'
         console.log(query)
         embed_callback(query)
-        console.log("FINISHED embed_callback")
       }
 
       if(possible_titles.length==1){
@@ -177,6 +194,7 @@ function getRedditQuery(url, embed_callback, button_callback){
 
     }
     else{
+      reportError("No r/anime post found for this show", false)
       console.log("No r/anime post found for this show")
     }
   })
@@ -188,13 +206,14 @@ function onDOMLoaded(settings){
 
   const tab_div = document.createElement("div")
   tab_div.setAttribute("class","tab-view")
+  const checked = 'checked'
   tab_div.innerHTML = `
-  <input type="radio" name="tabs" id="tab1" checked />
+  <input type="radio" name="tabs" id="tab1" ${default_tab==1?checked:''}/>
 	<label for="tab1">
-    r/anime <img id="ranime-icon" src="${chrome.runtime.getURL('../images/ranime-icon-mask.png')}"/>
+    r/anime <img id="ranime-icon" src="${chrome.runtime.getURL('../images/ui-icons/ranime-icon-mask.png')}"/>
   </label>
 
-	<input type="radio" name="tabs" id="tab2" />
+	<input type="radio" name="tabs" id="tab2" ${default_tab==2?checked:''}/>
 	<label for="tab2">
     Crunchyroll <img id="cr-icon" src="${chrome.runtime.getURL('../images/ui-icons/crunchyroll-icon.svg')}"/>
   </label>
@@ -240,4 +259,9 @@ function onDOMLoaded(settings){
     if(list.length>0)
       list[0].setAttribute('class', value)
   }
+
+  const comment_form = document.querySelector(".guestbook-commentform .contents")
+  comment_form.style['width'] = '640px'
+  comment_form.style['margin-left'] = 'auto'
+  comment_form.style['margin-right'] = 'auto'
 }

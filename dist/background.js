@@ -18,16 +18,13 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if(request == 'dark-theme'){
       chrome.tabs.insertCSS(sender.tab.id, {
-        file: "Reddit-Embed/css/dark-theme.css"
-      });
-      chrome.tabs.insertCSS(sender.tab.id, {
-        file: "content_scripts/dark-buttons.css"
+        file: "/themes/dark.css"
       });
       sendResponse("DARK MODE ACTIVATED")
     }
     else if(request == 'light-theme'){
       chrome.tabs.insertCSS(sender.tab.id, {
-        file: "Reddit-Embed/css/light-theme.css"
+        file: "/themes/light.css"
       });
       sendResponse("LIGHT MODE ACTIVATED")
     }

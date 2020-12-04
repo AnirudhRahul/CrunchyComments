@@ -8,10 +8,7 @@ fs = require('fs')
 fse = require('fs-extra');
 path = require('path')
 
-fse.moveSync('dist/manifest.json', 'tmp/manifest.json')
 fse.emptyDirSync('dist/')
-fse.moveSync('tmp/manifest.json', 'dist/manifest.json')
-fse.removeSync('tmp/')
 fs.mkdirSync("dist/themes/")
 console.log("Deleted Old build")
 
@@ -50,6 +47,9 @@ fse.copySync('source/', 'dist/', {
 });
 //Want all the content in the pages folder
 fse.copySync('source/pages/', 'dist/pages/', {
+  overwrite: true,
+});
+fse.copySync('source/manifest.json', 'dist/manifest.json', {
   overwrite: true,
 });
 fse.removeSync('dist/content_scripts/css/')

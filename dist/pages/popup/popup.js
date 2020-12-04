@@ -2,10 +2,10 @@ $(function() {
   $('#theme-toggle').change(function() {
     chrome.storage.sync.set({'dark-theme': !$(this).prop('checked')}, console.log)
     if($(this).prop('checked')){
-      chrome.tabs.insertCSS({file:"themes/light.css"});
+      chrome.tabs.insertCSS({file:"/themes/light.css"});
     }
     else{
-      chrome.tabs.insertCSS({file:"themes/dark.css"});
+      chrome.tabs.insertCSS({file:"/themes/dark.css"});
     }
   })
 
